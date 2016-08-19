@@ -18,6 +18,7 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$vb_cpuexecutioncap = 100
 $shared_folders = {}
 $forwarded_ports = {}
 
@@ -47,6 +48,8 @@ end
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
+  # forward ssh agent to easily ssh into the different machines
+  config.ssh.forward_agent = true
 
   config.vm.box = "coreos-%s" % $update_channel
   if $image_version != "current"
@@ -99,7 +102,7 @@ Vagrant.configure("2") do |config|
       end
 
       if $expose_docker_tcp
-        config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
+        config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), host_ip: "127.0.0.1", auto_correct: true
       end
 
       $forwarded_ports.each do |guest, host|
@@ -118,6 +121,7 @@ Vagrant.configure("2") do |config|
         vb.gui = vm_gui
         vb.memory = vm_memory
         vb.cpus = vm_cpus
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
       end
 
       ip = "172.17.8.#{i+100}"

@@ -1,3 +1,26 @@
+# Shared Folder
+In order to have a shared directory beetween cluster and host machines:
+
+* in the Vagrantfile
+
+```ruby
+# Uncomment below to enable NFS for sharing the host machine into the
+coreos-vagrant VM.
+config.vm.synced_folder "/tmp", "/home/core/share", id: "core", :nfs =>
+true, :mount_options => ['nolock,vers=3,udp']
+$shared_folders.each_with_index do |(host_folder, guest_folder), index|   
+config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id:
+ "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
+end  
+```
+* some installations for nfs
+
+```bash
+sudo apt-get install nfs-common nfs-kernel-server
+```
+
+After vagrant up, you will have /home/core/share directory. 
+
 # CoreOS Vagrant
 
 This repo provides a template Vagrantfile to create a CoreOS virtual machine using the VirtualBox software hypervisor.

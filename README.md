@@ -1,13 +1,11 @@
-# Shared Folder
-In order to have a shared directory beetween cluster and host machines:
+# Shared Directory
+In order to have a shared directory between cluster and host machine:
 
-* in the Vagrantfile
+* in the Vagrantfile, specify the dir you would like to share instead of /tmp
 
 ```ruby
-# Uncomment below to enable NFS for sharing the host machine into the
-coreos-vagrant VM.
-config.vm.synced_folder "/tmp", "/home/core/share", id: "core", :nfs =>
-true, :mount_options => ['nolock,vers=3,udp']
+# Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
+config.vm.synced_folder "/tmp", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
 $shared_folders.each_with_index do |(host_folder, guest_folder), index|   
 config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id:
  "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
